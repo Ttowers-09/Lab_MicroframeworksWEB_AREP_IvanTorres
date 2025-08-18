@@ -50,7 +50,7 @@ Accedemos a la carpeta:
 $ cd Arep_Taller1_IvanTorres
 ```
 
-## Ejecución
+## Ejecución (Solo consola)
 
 Estando dentro de la carpeta Arep_Taller1_IvanTorres ejecutamos el siguiente  comando:
 ```
@@ -61,6 +61,23 @@ nos dirigimos a nuestro browser y escribimos:
 ```
 http://localhost:35003
 ```
+
+## Ejecución (Con Maven)
+Estando dentro de la carpeta Arep_Taller1_IvanTorres ejecutamos el siguiente  comando:
+```
+mvn clean install
+```
+Con esto aseguramos que la compilación se realice desde cero eliminando cualquier archivo de compilación anterior.
+luego utilizamos:
+```
+mvn compile
+```
+Para ejecutar el código fuente del proyecto.
+luego utilizamos:
+```
+mvn exec:java
+```
+Para ejecutar la clase principal con método main.
 
 ### Finalizar la ejecución
 
@@ -87,7 +104,7 @@ Usamos Git y GitHub para realizar el versionamiento del proyecto.
 
 ## Authors
 
-* **Ivan Santiago Forero Torres** - *Trabajo inicial* - gitHub User: [Ttowers-09](https://github.com/PurpleBooth)
+* **Ivan Santiago Forero Torres** - *Trabajo inicial* - gitHub User: [Ttowers-09]
 
 
 ## Licencia
