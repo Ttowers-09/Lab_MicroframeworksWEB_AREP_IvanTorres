@@ -47,14 +47,19 @@ $ git clone https://github.com/Ttowers-09/Arep_Taller1_IvanTorres.git
 ```
 Accedemos a la carpeta:
 ```
-$ cd Talle1AREP
+$ cd Arep_Taller1_IvanTorres
 ```
 
 ## Ejecución
 
-Estando dentro de la carpeta Talle1AREP ejecutamos el siguiente  comando:
+Estando dentro de la carpeta Arep_Taller1_IvanTorres ejecutamos el siguiente  comando:
 ```
 $ java -cp target/classes com.arep.taller1.talle1arep.HttpServer
+```
+
+nos dirigimos a nuestro browser y escribimos:
+```
+http://localhost:35003
 ```
 
 ### Finalizar la ejecución
