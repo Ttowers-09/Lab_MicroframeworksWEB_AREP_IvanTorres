@@ -1,3 +1,39 @@
+
+# Reto: Servidor Web No Concurrente en Java
+
+Este proyecto es la solución a un reto académico que consiste en implementar un servidor web sencillo en **Java** sin el uso de frameworks externos (como Spark o Spring). El servidor debe:
+- Atender múltiples solicitudes de manera secuencial (no concurrente).
+- Leer y retornar archivos del disco local, incluyendo páginas HTML, archivos JavaScript, CSS e imágenes.
+- Permitir la construcción de una aplicación web de prueba que consuma servicios REST de forma asíncrona desde el frontend.
+- Utilizar únicamente Java y las librerías estándar para el manejo de red y archivos.
+
+## Objetivos del reto
+- Demostrar el manejo de sockets y protocolos HTTP en Java puro.
+- Servir archivos estáticos y recursos web desde el backend.
+- Implementar servicios REST simples y consumirlos desde el frontend usando JavaScript asíncrono.
+
+### Puerto que vamos a utilizar
+````
+Puerto: 35003
+````
+
+## Arquitectura
+
+El servidor está implementado en la clase principal `HttpServer.java` y funciona de la siguiente manera:
+
+1. **Escucha en un puerto TCP (35003)** usando `ServerSocket` y acepta conexiones de clientes de forma secuencial (no concurrente).
+2. **Procesa cada solicitud HTTP** leyendo la primera línea para identificar el método y la ruta solicitada.
+3. **Manejo de archivos estáticos:**
+    - Si la ruta corresponde a un archivo existente en `src/main/resources/public`, el servidor lee el archivo del disco y lo retorna con el tipo MIME adecuado (HTML, CSS, JS, imágenes, etc.).
+4. **Manejo de servicios REST:**
+    - Si la ruta solicitada corresponde a un endpoint especial (por ejemplo, `/hello`, `/hellopost`, `/app/hello`), el servidor ejecuta un método Java que genera la respuesta (texto o JSON), permitiendo la comunicación asíncrona desde el frontend.
+5. **Frontend de prueba:**
+    - La carpeta `public` contiene una aplicación web con HTML, CSS, JS e imágenes que permite probar tanto la carga de archivos estáticos como la invocación de servicios REST mediante AJAX/fetch.
+
+El servidor no utiliza ningún framework web externo, solo clases estándar de Java (`ServerSocket`, `Files`, `PrintWriter`, etc.).
+
+---
+
 # Servidor web no concurrente
 Este proyecto implementa un servidor web sencillo en **Java** que permite:
 - Servir archivos estáticos como HTML, CSS, JS e imágenes.  
@@ -43,21 +79,21 @@ Verifica las versiones:
 ### Instalación
 Clona este repositorio en tu máquina:
 ```
-$ git clone https://github.com/Ttowers-09/Arep_Taller1_IvanTorres.git
+git clone https://github.com/Ttowers-09/Arep_Taller1_IvanTorres.git
 ```
 Accedemos a la carpeta:
 ```
-$ cd Arep_Taller1_IvanTorres
+cd Arep_Taller1_IvanTorres
 ```
 
 ## Ejecución (Solo consola)
 
 Estando dentro de la carpeta Arep_Taller1_IvanTorres ejecutamos el siguiente  comando:
 ```
-$ java -cp target/classes com.arep.taller1.talle1arep.HttpServer
+java -cp target/classes com.arep.taller1.talle1arep.HttpServer
 ```
 
-nos dirigimos a nuestro browser y escribimos:
+la consola se quedará esperando respuesta asi que nos dirigimos a nuestro browser y escribimos:
 ```
 http://localhost:35003
 ```
