@@ -28,6 +28,14 @@
         <img src="IMAGEN.jpg" alt="Imagen decorativa">
     </div>
 
+    <h2>Ver código de style.css</h2>
+    <button onclick="mostrarCSS()">Ver Style.css</button>
+    <pre id="cssContent" style="background:#f4f4f4; border:1px solid #ccc; padding:10px; max-height:300px; overflow:auto;"></pre>
+
+    <h2>Ver código de index.html</h2>
+    <button onclick="mostrarIndex()">Ver index.html</button>
+    <pre id="indexContent" style="background:#f4f4f4; border:1px solid #ccc; padding:10px; max-height:300px; overflow:auto;"></pre>
+
 
     <script>
         function loadGetMsg() {
@@ -45,6 +53,22 @@
             fetch(url, {method: 'POST'})
                 .then(x => x.text())
                 .then(y => document.getElementById("postrespmsg").innerHTML = y);
+        }
+
+        function mostrarCSS() {
+            fetch('/style.css')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('cssContent').textContent = data;
+                });
+        }
+
+        function mostrarIndex() {
+            fetch('/index.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('indexContent').textContent = data;
+                });
         }
     </script>
 </body>
