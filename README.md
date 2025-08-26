@@ -79,23 +79,24 @@ Verifica las versiones:
 ### Instalación
 Clona este repositorio en tu máquina:
 ```
-git clone https://github.com/Ttowers-09/Arep_Taller1_IvanTorres.git
+git clone https://github.com/Ttowers-09/Lab_MicroframeworksWEB_AREP_IvanTorres.git
 ```
 Accedemos a la carpeta:
 ```
-cd Arep_Taller1_IvanTorres
+cd Lab_MicroframeworksWEB_AREP_IvanTorres
 ```
 
 ## Ejecución (Solo consola)
 
-Estando dentro de la carpeta Arep_Taller1_IvanTorres ejecutamos el siguiente  comando:
+Estando dentro de la carpeta Lab_MicroframeworksWEB_AREP_IvanTorres ejecutamos el siguiente  comando:
 ```
 java -cp target/classes com.arep.taller1.talle1arep.HttpServer
 ```
 
+
 la consola se quedará esperando respuesta asi que nos dirigimos a nuestro browser y escribimos:
 ```
-http://localhost:35003
+http://localhost:8080
 ```
 
 ## Ejecución (Con Maven)

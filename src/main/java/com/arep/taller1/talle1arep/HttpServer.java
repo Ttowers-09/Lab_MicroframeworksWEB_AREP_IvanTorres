@@ -50,6 +50,20 @@ public class HttpServer {
     private static final Map<String, RouteHandler> getRoutes = new HashMap<>();
     private static final Map<String, RouteHandler> postRoutes = new HashMap<>();
 
+    /**
+     * Devuelve el handler registrado para una ruta GET específica (solo para pruebas).
+     */
+    public static RouteHandler getGetRouteHandler(String path) {
+        return getRoutes.get(path);
+    }
+
+    /**
+     * Devuelve el handler registrado para una ruta POST específica (solo para pruebas).
+     */
+    public static RouteHandler getPostRouteHandler(String path) {
+        return postRoutes.get(path);
+    }
+
     // Método para registrar rutas GET
     public static void get(String path, RouteHandler handler) {
         getRoutes.put(path, handler);
