@@ -14,7 +14,7 @@ Este proyecto es la solución a un reto académico que consiste en implementar u
 
 ### Puerto que vamos a utilizar
 ````
-Puerto: 35003
+Puerto: 8080
 ````
 
 ## Arquitectura
@@ -113,7 +113,9 @@ luego utilizamos:
 ```
 mvn exec:java
 ```
-Para ejecutar la clase principal con método main.
+Para ejecutar la clase principal con método main, se verá de la siguiente manera.
+![Evidencia](src/main/resources/imgReadme/1.png)
+
 
 ### Finalizar la ejecución
 
@@ -123,6 +125,52 @@ En la consola ejecutamos la combinación de teclas:
 Windows: Ctrl + C
 Mac: Comando + C
 ```
+## Prueba de funcionalidades:
+-Cuando carga en el buscador se verá de la siguiente manera:
+![Evidencia](src/main/resources/imgReadme/2.png)
+
+- Luego ejecutamos lo siguiente en nuestro buscador, deberiamos de ver la salida "Hello + {nombre}"
+```
+http://localhost:8080/App/hello?name=nombre
+```
+![Evidencia](src/main/resources/imgReadme/nombre.png)
+
+- Al ejecutar el siguiente valor deberiamos de ver el valor numérico del valor de PI
+```
+http://localhost:8080/App/pi
+```
+![Evidencia](src/main/resources/imgReadme/pi.png)
+
+- Para visualizar los archivos estáticos, los cuales estan en la carpeta resources:
+```
+http://localhost:8080/index.html
+```
+![Evidencia](src/main/resources/imgReadme/index.png)
+![Evidencia](src/main/resources/imgReadme/index2.png)
+![Evidencia](src/main/resources/imgReadme/index3.png)
+
+- Para ejecutar el método GET podemos utilizar el cuadro para poder colocar cualquier nombre:
+![Evidencia](src/main/resources/imgReadme/Get.png)
+![Evidencia](src/main/resources/imgReadme/get2.png)
+
+- Para ejecutar el método POST podemos utilizar el cuadro para poder colocar cualquier nombre:
+![Evidencia](src/main/resources/imgReadme/Post.png)
+![Evidencia](src/main/resources/imgReadme/post2.png)
+
+- Podemos visualizar los archivos estaticos definiendolos en nuestras URL, de la siguiente manera:
+![Evidencia](src/main/resources/imgReadme/estatico.png)
+
+además de eso, en el index podemos encontar botones para ver los archivos:
+![Evidencia](src/main/resources/imgReadme/estatico2.png)
+
+## Ejecutar los Test:
+- Los test se encuentran en la carpeta: ../test/java/com/arep/taller1/talle1.arep
+
+- Para ejecutar los test utilizamos el siguiente comando:
+```
+mvn test
+```
+![Evidencia](src/main/resources/imgReadme/test.png)
 
 ## Construido con:
 

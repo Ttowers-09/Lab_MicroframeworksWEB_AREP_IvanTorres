@@ -4,18 +4,98 @@ import java.net.*;
 import java.io.*;
 import java.nio.file.*;
 
-public class HttpServer {
+import java.util.HashMap;
+import java.util.Map;
 
-    private static final String RESOURCE_PATH = "src/main/resources/public";
+// Interfaz funcional para los handlers de rutas
+@FunctionalInterface
+interface RouteHandler {
+    String handle(Request req, Response res);
+}
+
+// Clases Request y Response básicas para el framework
+class Request {
+    private final String path;
+    private final String query;
+    private final String method;
+    private final String body;
+    public Request(String path, String query, String method, String body) {
+        this.path = path;
+        this.query = query;
+        this.method = method;
+        this.body = body;
+    }
+    public String getPath() { return path; }
+    public String getQuery() { return query; }
+    public String getMethod() { return method; }
+    public String getBody() { return body; }
+    public String getValues(String key) {
+        String params = method.equals("POST") ? body : query;
+        if (params == null) return null;
+        for (String param : params.split("&")) {
+            String[] pair = param.split("=");
+            if (pair.length == 2 && pair[0].equals(key)) return pair[1];
+        }
+        return null;
+    }
+}
+
+class Response {
+    // Se puede expandir en el futuro
+}
+
+
+public class HttpServer {
+    // Mapas para almacenar rutas GET y POST y sus handlers
+    private static final Map<String, RouteHandler> getRoutes = new HashMap<>();
+    private static final Map<String, RouteHandler> postRoutes = new HashMap<>();
+
+    // Método para registrar rutas GET
+    public static void get(String path, RouteHandler handler) {
+        getRoutes.put(path, handler);
+    }
+    // Método para registrar rutas POST
+    public static void post(String path, RouteHandler handler) {
+        postRoutes.put(path, handler);
+    }
+
+    private static String RESOURCE_PATH = "target/classes/webroot";
+    // Permite configurar la carpeta de archivos estáticos (relativa a target/classes)
+    public static void staticfiles(String folder) {
+        if (folder.startsWith("/")) folder = folder.substring(1);
+        RESOURCE_PATH = "target/classes/" + folder;
+    }
 
     public static void main(String[] args) throws IOException, URISyntaxException {
+        // Configuración de carpeta de archivos estáticos (ejemplo: webroot)
+        staticfiles("webroot");
+
+        // Puerto configurable (por defecto 8080)
+        int port = 8080;
+        if (args.length > 0) {
+            try { port = Integer.parseInt(args[0]); } catch (Exception ignored) {}
+        }
         ServerSocket serverSocket = null;
         try {
-            serverSocket = new ServerSocket(35003);
+            serverSocket = new ServerSocket(port);
         } catch (IOException e) {
-            System.err.println("Could not listen on port: 35003.");
+            System.err.println("Could not listen on port: " + port);
             System.exit(1);
         }
+
+        // Ejemplo de REST con prefijo /App
+        get("/App/hello", (req, res) -> {
+            String nombre = req.getValues("name");
+            if (nombre == null) nombre = "desconocido";
+            return "Hello " + nombre;
+        });
+        get("/App/pi", (req, res) -> String.valueOf(Math.PI));
+        // Ejemplo POST
+        post("/App/hellopost", (req, res) -> {
+            String nombre = req.getValues("name");
+            if (nombre == null) nombre = "desconocido";
+            return "Hello (POST) " + nombre;
+        });
 
         boolean running = true;
         while (running) {
@@ -26,47 +106,64 @@ public class HttpServer {
 
                 System.out.println("Listo para recibir ...");
 
-                String inputLine, path = null;
+                String inputLine, path = null, method = null;
                 boolean firstLine = true;
+                String query = null;
+                int contentLength = 0;
+                StringBuilder bodyBuilder = new StringBuilder();
 
+                // Leer headers y primera línea
                 while ((inputLine = in.readLine()) != null) {
                     if (firstLine) {
-                        path = inputLine.split(" ")[1]; 
+                        String[] parts = inputLine.split(" ");
+                        method = parts[0];
+                        path = parts[1];
+                        if (path.contains("?")) {
+                            query = path.substring(path.indexOf("?") + 1);
+                            path = path.substring(0, path.indexOf("?"));
+                        }
                         System.out.println("Path: " + path);
                         firstLine = false;
                     }
-                    System.out.println("Received: " + inputLine);
-                    if (!in.ready()) break;
+                    if (inputLine.toLowerCase().startsWith("content-length:")) {
+                        try {
+                            contentLength = Integer.parseInt(inputLine.split(":")[1].trim());
+                        } catch (Exception ignored) {}
+                    }
+                    if (inputLine.isEmpty()) break; // Fin de headers
                 }
 
-                
-                String cleanPath = path;
-                if (cleanPath.contains("?")) {
-                    cleanPath = cleanPath.substring(0, cleanPath.indexOf("?"));
+                // Leer body si es POST
+                if ("POST".equals(method) && contentLength > 0) {
+                    char[] bodyChars = new char[contentLength];
+                    int read = in.read(bodyChars, 0, contentLength);
+                    if (read > 0) {
+                        bodyBuilder.append(bodyChars, 0, read);
+                    }
                 }
+                String body = bodyBuilder.length() > 0 ? bodyBuilder.toString() : null;
 
-                
-                if (path.startsWith("/hello")) {
-                    String name = path.contains("=") ? path.split("=")[1] : "John";
-                    String response = "HTTP/1.1 200 OK\r\n"
-                            + "Content-Type: text/plain\r\n\r\n"
-                            + "Hola " + name;
+                // Buscar si la ruta está registrada como GET o POST
+                if ("GET".equals(method) && getRoutes.containsKey(path)) {
+                    Request req = new Request(path, query, method, null);
+                    Response res = new Response();
+                    String respBody = getRoutes.get(path).handle(req, res);
+                    String contentType = respBody.trim().startsWith("{") ? "application/json" : "text/plain";
+                    String response = "HTTP/1.1 200 OK\r\n" +
+                            "Content-Type: " + contentType + "\r\n\r\n" +
+                            respBody;
                     out.println(response);
-
-                } else if (path.startsWith("/hellopost")) {
-                    String name = path.contains("=") ? path.split("=")[1] : "John";
-                    String response = "HTTP/1.1 200 OK\r\n"
-                            + "Content-Type: text/plain\r\n\r\n"
-                            + "Hola " + name;
+                } else if ("POST".equals(method) && postRoutes.containsKey(path)) {
+                    Request req = new Request(path, query, method, body);
+                    Response res = new Response();
+                    String respBody = postRoutes.get(path).handle(req, res);
+                    String contentType = respBody.trim().startsWith("{") ? "application/json" : "text/plain";
+                    String response = "HTTP/1.1 200 OK\r\n" +
+                            "Content-Type: " + contentType + "\r\n\r\n" +
+                            respBody;
                     out.println(response);
-
-                } else if (path.startsWith("/app/hello")) {
-                    
-                    serveJsonHello(path, out);
-
                 } else {
-                    
-                    serveStaticFile(cleanPath, rawOut, out);
+                    serveStaticFile(path, rawOut, out);
                 }
 
             } catch (IOException e) {
@@ -77,21 +174,17 @@ public class HttpServer {
     }
 
     
-    private static void serveJsonHello(String path, PrintWriter out) {
-        String name = "Desconocido";
-        if (path.contains("?") && path.contains("=")) {
-            name = path.split("=")[1];
-        }
-
-        String response = "HTTP/1.1 200 OK\r\n"
-                + "Content-Type: application/json\r\n\r\n"
-                + "{ \"mensaje\": \"Hola " + name + "\" }";
-
-        out.println(response);
-    }
+    // Eliminada función no utilizada serveJsonHello
 
     
     private static void serveStaticFile(String path, OutputStream rawOut, PrintWriter out) throws IOException {
+        if (path == null) {
+            String response = "HTTP/1.1 400 Bad Request\r\n"
+                    + "Content-Type: text/html\r\n\r\n"
+                    + "<h1>400 Bad Request</h1>";
+            out.println(response);
+            return;
+        }
         String resourcePath = path.equals("/") ? "/index.html" : path;
 
         Path filePath = Paths.get(RESOURCE_PATH + resourcePath);
